@@ -1,7 +1,7 @@
 <?php
 
 /**
- * flexTable
+ * permaLink
  * 
  * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
  * @link http://phpmanufaktur.de
@@ -15,16 +15,16 @@
 // prevent this file from being accessed directly
 if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
 
-$module_directory     = 'flex_table';
-$module_name          = 'flexTable';
+$module_directory     = 'perma_link';
+$module_name          = 'permaLink';
 $module_function      = 'tool';
-$module_version       = '0.12';
+$module_version       = '0.10';
 $module_status        = 'Beta';
 $module_platform      = '2.8'; 
 $module_author        = 'Ralf Hertsch, Berlin (Germany)';
 $module_license       = 'GNU General Public License';
-$module_description   = 'Flexible table module for WebsiteBaker'; 
-$module_home          = 'http://phpmanufaktur.de/flex_table';
-$module_guid          = 'E47DC7FE-5511-4BF9-91D7-148416EB796E';
+$module_description   = 'Permanent Links for WebsiteBaker Addons'; 
+$module_home          = 'http://phpmanufaktur.de/perma_link';
+$module_guid          = '2DDC6704-498E-4EC9-BE30-2693A4B9D3A3';
 
 ?>
