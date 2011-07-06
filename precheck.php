@@ -38,14 +38,12 @@ if ($result) {
 		'Default Charset' => array(
 			'REQUIRED' => 'utf-8',
 			'ACTUAL' => $data['value'],
-			'STATUS' => ($data['value'] === 'utf-8'),
-		'MySQL' => array(
-			'REQUIRED' => '5',
+			'STATUS' => ($data['value'] === 'utf-8')),
+		'MySQL VERSION' => array(
+			'REQUIRED' => '>= 5.0',
 			'ACTUAL' => $major,
 			'STATUS' => ($major >= 5))
-		)
 	);
 }
-
 
 ?>

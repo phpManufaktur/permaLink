@@ -148,3 +148,11 @@ textarea
 .about_text p {
   line-height: 120%;
 }
+.intro {
+  border: 1px solid #000000;
+  color: #000000;
+  background-color: #ffffdd;
+  margin: 20px 0 10px 0;
+  padding: 10px;
+  font-size: 8pt;
+}

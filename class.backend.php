@@ -31,14 +31,13 @@ if (!class_exists('dbconnectle')) 				require_once(WB_PATH.'/modules/dbconnect_l
 if (!class_exists('Dwoo')) 								require_once(WB_PATH.'/modules/dwoo/include.php');
 if (!class_exists('kitToolsLibrary'))   	require_once(WB_PATH.'/modules/kit_tools/class.tools.php');
 
+if (!class_exists('permaLink'))						require_once(WB_PATH.'/modules/'.basename(dirname(__FILE__)).'/class.interface.php');
+
 global $parser;
-global $kitLibrary;
 
-if (!is_object($kitLibrary)) 								$kitLibrary = new kitToolsLibrary();
-if (!is_object($parser)) 										$parser = new Dwoo();
+if (!is_object($parser)) 									$parser = new Dwoo();
 
-
-class permaLinkBackend {
+class permaLinkBackend extends permaLink {
 	
 	const request_action							= 'act';
 	
@@ -51,85 +50,20 @@ class permaLinkBackend {
 	private $tab_navigation_array = array(
 		self::action_list								=> pl_tab_list,
 		self::action_edit								=> pl_tab_edit,
-		self::action_about							=> ft_tab_about		
+		self::action_about							=> pl_tab_about		
 	);
 	
 	private $page_link 								= '';
 	private $img_url									= '';
-	private $template_path						= '';
-	private $error										= '';
-	private $message									= '';
-
+	
 	public function __construct() {
+		parent::__construct();
 		$this->page_link = ADMIN_URL.'/admintools/tool.php?tool=perma_link';
-		$this->template_path = WB_PATH . '/modules/' . basename(dirname(__FILE__)) . '/htt/' ;
 		$this->img_url = WB_URL. '/modules/'.basename(dirname(__FILE__)).'/images/';
 		date_default_timezone_set(tool_cfg_time_zone);
 	} // __construct()
 	
 	/**
-    * Set $this->error to $error
-    * 
-    * @param STR $error
-    */
-  public function setError($error) {
-  	$debug = debug_backtrace();
-    $caller = next($debug);
-  	$this->error = sprintf('[%s::%s - %s] %s', basename($caller['file']), $caller['function'], $caller['line'], $error);
-  } // setError()
-
-  /**
-    * Get Error from $this->error;
-    * 
-    * @return STR $this->error
-    */
-  public function getError() {
-    return $this->error;
-  } // getError()
-
-  /**
-    * Check if $this->error is empty
-    * 
-    * @return BOOL
-    */
-  public function isError() {
-    return (bool) !empty($this->error);
-  } // isError
-
-  /**
-   * Reset Error to empty String
-   */
-  public function clearError() {
-  	$this->error = '';
-  }
-
-  /** Set $this->message to $message
-    * 
-    * @param STR $message
-    */
-  public function setMessage($message) {
-    $this->message = $message;
-  } // setMessage()
-
-  /**
-    * Get Message from $this->message;
-    * 
-    * @return STR $this->message
-    */
-  public function getMessage() {
-    return $this->message;
-  } // getMessage()
-
-  /**
-    * Check if $this->message is empty
-    * 
-    * @return BOOL
-    */
-  public function isMessage() {
-    return (bool) !empty($this->message);
-  } // isMessage
-  
-  /**
    * Return Version of Module
    *
    * @return FLOAT
@@ -190,6 +124,12 @@ class permaLinkBackend {
     isset($_REQUEST[self::request_action]) ? $action = $_REQUEST[self::request_action] : $action = self::action_default;
         
   	switch ($action):
+  	case self::action_edit:
+  		$this->show(self::action_edit, $this->dlgEdit());
+  		break;
+  	case self::action_edit_check:
+  		$this->show(self::action_edit_check, $this->checkEdit());
+  		break;
   	case self::action_about:
   		$this->show(self::action_about, $this->dlgAbout());
   		break;
@@ -242,6 +182,129 @@ class permaLinkBackend {
   	return __METHOD__;
   } // dlgList()
 	
+  public function dlgEdit() {
+  	global $dbPermaLink;
+  	global $kitLibrary;
+  	
+  	$link_id = (isset($_REQUEST[dbPermaLink::field_id])) ? $_REQUEST[dbPermaLink::field_id] : -1;
+
+  	$link = array();
+  	if ($link_id < 1) {
+  		if (!$this->getDefaultDataRecord($link)) {
+  			return false;
+  		}
+  		$link[dbPermaLink::field_request_type] = dbPermaLink::type_manual;
+  		$link[dbPermaLink::field_request_by] = $kitLibrary->getDisplayName();
+  		$link[dbPermaLink::field_timestamp] = time();
+  	}
+  	else {
+  		if (!$this->getDataRecord($link_id, $link)) {
+  			return false;
+  		}
+  	}
+  	foreach ($link as $key => $value) {
+  		if (isset($_REQUEST[$key])) $link[$key] = $_REQUEST[$key];
+  	}
+  
+  	$link_array = array(
+  		'id'						=> array(	'name'		=> dbPermaLink::field_id,
+  															'value'		=> $link_id,
+  															'label'		=> pl_label_id,
+  															'hint'		=> pl_hint_id),
+  		'request_type'	=> array(	'name'		=> dbPermaLink::field_request_type,
+  															'value'		=> $link[dbPermaLink::field_request_type],
+  															'options'	=> $dbPermaLink->type_array,
+  															'enabled'	=> 0,
+  															'label'		=> pl_label_request_type,
+  															'hint'		=> pl_hint_request_type),
+  		'request_by'		=> array(	'name'		=> dbPermaLink::field_request_by,
+  															'value'		=> $link[dbPermaLink::field_request_by],
+  															'enabled'	=> 0,
+  															'label'		=> pl_label_request_by,
+  															'hint'		=> pl_hint_request_by),
+  		'status'				=> array(	'name'		=> dbPermaLink::field_status,
+  															'value'		=> $link[dbPermaLink::field_status],
+  															'options'	=> $dbPermaLink->status_array,
+  															'enabled'	=> ($link_id) < 1 ? 0 : 1,
+  															'label'		=> pl_label_status,
+  															'hint'		=> pl_hint_status),
+  		'redirect_url'	=> array(	'name'		=> dbPermaLink::field_redirect_url,
+  															'value'		=> $link[dbPermaLink::field_redirect_url],
+  															'enabled'	=> ($link_id < 1) ? 1 : 0,
+  															'label'		=> pl_label_redirect_url,
+  															'hint'		=> pl_hint_redirect_url),
+  		'permanent_link'=> array(	'name'		=> dbPermaLink::field_permanent_link,
+  															'value'		=> $link[dbPermaLink::field_permanent_link],
+  															'label'		=> pl_label_permanent_link,
+  															'enabled'	=> ($link_id < 1) ? 1 : 0,
+  															'hint'		=> pl_hint_permanent_link),
+  		'timestamp' 		=> array(	'name'		=> dbPermaLink::field_timestamp,
+  															'value'		=> $link[dbPermaLink::field_timestamp],
+  															'label'		=> pl_label_timestamp,
+  															'hint'		=> pl_hint_timestamp)		
+  	);
+  	
+  	$form = array(
+  		'action'		=> array(	'link'	=> $this->page_link,
+  													'name'	=> self::request_action,
+  													'value'	=> self::action_edit_check),
+  		'btn'				=> array(	'ok'		=> tool_btn_ok,
+  													'abort'	=> tool_btn_abort)
+  	); 
+  	$data = array(
+  		'form'				=> $form,
+  		'title'				=> pl_title_edit,
+  		'link'				=> $link_array,
+  		'is_intro'		=> ($this->isMessage()) ? 0 : 1,
+  		'intro'				=> ($this->isMessage()) ? $this->getMessage() : pl_intro_edit,
+  	);
+  	return $this->getTemplate('backend.edit.htt', $data);
+  } // dlgEdit()
+  
+  public function checkEdit() {
+  	global $dbPermaLink;
+  	
+  	$link_id = isset($_REQUEST[dbPermaLink::field_id]) ? $_REQUEST[dbPermaLink::field_id] : -1;
+  	
+  	$link = array();
+  	if ($link_id < 1) {
+  		if (!$this->getDefaultDataRecord($link)) {
+  			return false;
+  		}
+  	}
+  	else {
+  		if (!$this->getDataRecord($link_id, $link)) {
+  			return false;
+  		}
+  	}
+    foreach($link as $key => $value) {
+    	switch($key):
+    	case dbPermaLink::field_status:
+    	case dbPermaLink::field_request_by:
+    	case dbPermaLink::field_request_type:
+    	case dbPermaLink::field_redirect_url:
+    	case dbPermaLink::field_permanent_link:
+    		if (isset($_REQUEST[$key])) $link[$key] = $_REQUEST[$key];
+    		break;
+    	default:
+    		continue;
+    	endswitch;	
+    }
+    
+    if ($link_id < 1) {
+    	// neuen permaLink anlegen
+    	if (!$this->createPermaLink($link[dbPermaLink::field_redirect_url], $link[dbPermaLink::field_permanent_link], $link[dbPermaLink::field_request_by], $link[dbPermaLink::field_request_type], $link_id)) {
+    		if ($this->isMessage()) return $this->dlgEdit();
+    		return false;
+    	}
+    	foreach ($link as $key => $value) {
+    		unset($_REQUEST[$key]);
+    	}	
+    	$_REQUEST[dbPermaLink::field_id] = $link_id;
+    }
+    return $this->dlgEdit();
+  } // dlgEditCheck()
+  
 } // class permaLinkBackend
 
 ?>
