@@ -19,9 +19,11 @@ else {
 	require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/languages/' .LANGUAGE .'.php');
 }
 
+require_once(WB_PATH .'/modules/'.basename(dirname(__FILE__)).'/class.permalink.php');
+
 global $admin;
 
-$tables = array();
+$tables = array('dbPermaLink');
 $error = '';
 
 foreach ($tables as $table) {
