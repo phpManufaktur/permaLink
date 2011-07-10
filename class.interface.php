@@ -145,6 +145,10 @@ class permaLink {
   	}
   	// Perma Link ggf. bereinigen
   	$perma_link = strtolower($perma_link);
+  	if (empty($perma_link)) {
+  		$this->setMessage(pl_msg_perma_link_empty);
+  		return false;
+  	}
   	if (strpos($perma_link, WB_URL.PAGES_DIRECTORY) !== false) {
   		$perma_link = str_replace(WB_URL.PAGES_DIRECTORY, '', $perma_link);
   	}
@@ -154,7 +158,7 @@ class permaLink {
   	$perma_link = str_replace('//', '/', $perma_link);
   	
   	// erstes Zeichen ein Slash?
-  	if (strpos($perma_link, '/') != 0) $perma_link = '/'.$perma_link;
+  	if ($perma_link[0] != '/') $perma_link = '/'.$perma_link;
   	
   	$fa = explode('/', $perma_link);
   	$perma_link = '';
@@ -165,6 +169,10 @@ class permaLink {
   			continue;
   		}
   		$perma_link .= '/'.media_filename($segment);
+  	}
+  	if (strpos($perma_link, '.') == 1) {
+  		$this->setMessage(pl_msg_perma_link_not_hidden);
+  		return false;
   	}
   	
   	$file = substr($perma_link, strrpos($perma_link, '/')+1);
@@ -235,6 +243,77 @@ class permaLink {
   	}
   	return true;
   } // createPermaLink()
+  
+  public function updatePermaLink($id, $status) {
+  	global $dbPermaLink;
+  	
+  	$where = array(dbPermaLink::field_id => $id);
+  	$link = array();
+  	
+  	if (!$dbPermaLink->sqlSelectRecord($where, $link)) {
+  		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbPermaLink->getError()));
+  		return false;
+  	}
+  	
+  	if (count($link) < 1) {
+  		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, sprintf(tool_error_id_invalid, $id)));
+  		return false;
+  	}
+  	
+  	$link = $link[0];
+  	
+  	if (($status == dbPermaLink::status_active) || ($status == dbPermaLink::status_locked)) {
+  		// Statusaenderung kann direkt durchgefuehrt werden, keine weiteren Aktionen erforderlich
+  		$data = array(dbPermaLink::field_status => $status);
+  		$where = array(dbPermaLink::field_id => $id);
+  		if (!$dbPermaLink->sqlUpdateRecord($data, $where)) {
+  			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbPermaLink->getError()));
+  			return false;
+  		}
+  		$this->setMessage(sprintf(pl_msg_perma_link_status_changed, $id));
+  		return true;
+  	}
+  	elseif ($status == dbPermaLink::status_deleted) {
+  		// permaLink soll geloescht werden
+  		if (file_exists(WB_PATH.PAGES_DIRECTORY.$link[dbPermaLink::field_permanent_link])) {
+  			if (!unlink(WB_PATH.PAGES_DIRECTORY.$link[dbPermaLink::field_permanent_link])) {
+  				$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, sprintf(pl_error_unlink_file, $link[dbPermaLink::field_permanent_link])));
+  				return false;
+  			}
+  		}
+  		$where = array(dbPermaLink::field_id => $id);
+  		if (!$dbPermaLink->sqlDeleteRecord($where)) {
+  			$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbPermaLink->getError()));
+  			return false;
+  		}
+  		$this->setMessage(sprintf(pl_msg_perma_link_deleted, $link[dbPermaLink::field_permanent_link]));
+  		return true;
+  	}
+  	else {
+  		// unbekannter Status
+  		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, sprintf(pl_error_status_unknown, $status)));
+  		return false;
+  	}
+  } // updatePermaLink()
+  
+  public function deletePermaLink($perma_link) {
+  	global $dbPermaLink;
+  	if (is_int($perma_link)) {
+  		return $this->updatePermaLink($perma_link, dbPermaLink::status_deleted);
+  	}
+  	// permaLink statt ID verwenden
+  	$where = array(dbPermaLink::field_permanent_link => $perma_link);
+  	$link = array();
+  	if (!$dbPermaLink->sqlSelectRecord($where, $link)) {
+  		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbPermaLink->getError()));
+  		return false;
+  	}
+  	if (count($link) < 1) {
+  		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, sprintf(pl_error_perma_link_invalid, $perma_link)));
+  		return false;
+  	}
+  	return $this->updatePermaLink($link[0][dbPermaLink::field_id], dbPermaLink::status_deleted);
+  }
   
 } // class permaLink
 

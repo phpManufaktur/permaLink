@@ -1,0 +1,111 @@
+{*
+ * permaLink
+ *
+ * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ * @link http://phpmanufaktur.de
+ * @copyright 2011
+ * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
+ * @version $Id$
+ *}
+<form name="link_edit" action="{$form.action.link}" method="post">
+  <input type="hidden" name="{$form.action.name}" value="{$form.action.value}" />
+  <input type="hidden" name="{$link.id.name}" value="{$link.id.value}" />
+  {if $link.request_by.enabled == 0}<input type="hidden" name="{$link.request_by.name}" value="{$link.request_by.value}" />{/if}
+  {if $link.request_type.enabled == 0}<input type="hidden" name="{$link.request_type.name}" value="{$link.request_type.value}" />{/if}
+  {if $link.status.enabled == 0}<input type="hidden" name="{$link.status.name}" value="{$link.status.value}" />{/if}
+  {if $link.redirect_url.enabled == 0}<input type="hidden" name="{$link.redirect_url.name}" value="{$link.redirect_url.value}" />{/if}
+  {if $link.permanent_link.enabled == 0}<input type="hidden" name="{$link.permanent_link.name}" value="{$link.permanent_link.value}" />{/if}
+  <h2>{$title}</h2>
+  <div class="{if $is_intro==1}intro{else}message{/if}">{$intro}</div>
+  <table width="100%">
+    <colgroup>
+      <col width="200" />
+      <col width="*" />
+      <col width="300" />
+    </colgroup>
+    <tbody>
+      <tr>
+        <td>&nbsp;</td>
+        <td>{if $link.id.value > 0}{string_format($link.id.value, '%05d')}{/if}</td>
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td class="pl_label">{$link.status.label}</td>
+        <td class="pl_value">
+          {if $link.status.enabled == 1}
+            <select name="{$link.status.name}">
+              {foreach $link.status.options option}
+              <option value="{$option.value}"{if $link.status.value == $option.value} selected="selected"{/if}>{$option.text}</option>
+              {/foreach}
+            </select>
+          {else}
+            {foreach $link.status.options option}{if $link.status.value == $option.value}{$option.text}{/if}{/foreach}
+          {/if}
+        </td>
+        <td class="pl_hint">{$link.status.hint}</td>
+      </tr>
+      <tr>
+        <td class="pl_label">{$link.request_type.label}</td>
+        <td class="pl_value">
+          {if $link.request_type.enabled == 1}
+          <select name="{$link.request_type.name}">
+            {foreach $link.request_type.options option}
+            <option value="{$option.value}"{if ($link.request_type.value == $option.value)} selected="selected"{/if}>{$option.text}</option>
+            {/foreach}
+          </select>
+          {else}
+            {foreach $link.request_type.options option}{if $link.request_type.value == $option.value}{$option.text}{/if}{/foreach}
+          {/if}
+        </td>
+        <td class="pl_hint">{$link.request_type.hint}</td>
+      </tr>
+      <tr>
+        <td class="pl_label">{$link.request_by.label}</td>
+        <td class="pl_value">
+          {if $link.request_by.enabled == 1}
+          <input type="text" name="{$link.request_by.name}" value="{$link.request_by.value}" />
+          {else}
+            {$link.request_by.value}
+          {/if}
+        </td>
+        <td class="pl_hint">{$link.request_by.hint}</td>
+      </tr>
+      <tr>
+        <td class="pl_label">{$link.redirect_url.label}</td>
+        <td class="pl_value">
+          {if $link.redirect_url.enabled == 1}
+          <input type="text" name="{$link.redirect_url.name}" value="{$link.redirect_url.value}" />
+          {else}
+          <em>{$link.redirect_url.value}</em>
+          {/if}
+        </td>
+        <td class="pl_hint">{$link.redirect_url.hint}</td>
+      </tr>
+      <tr>
+        <td class="pl_label">{$link.permanent_link.label}</td>
+        <td class="pl_value">
+          {if $link.permanent_link.enabled == 1}
+          <input type="text" name="{$link.permanent_link.name}" value="{$link.permanent_link.value}" />
+          {else}
+          <b>{$link.permanent_link.value}</b>
+          {/if}
+        </td>
+        <td class="pl_hint">{$link.permanent_link.hint}</td>
+      </tr>
+      <tr>
+        <td class="pl_label">{$link.timestamp.label}</td>
+        <td class="pl_value">{date_format($link.timestamp.value '%d.%m.%Y - %R')}</td>
+        <td class="pl_hint">{$link.timestamp.hint}</td>
+      </tr>
+      
+      <tr><td colspan="3">&nbsp;</td></tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td colspan="2">
+          <input type="submit" value="{$form.btn.ok}" />&nbsp;
+          <input type="button" value="{$form.btn.abort}" onclick="javascript: window.location = '{$form.action.link}'; return false;" />
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</form>

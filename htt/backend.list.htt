@@ -1,0 +1,37 @@
+{*
+ * permaLink
+ *
+ * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+ * @link http://phpmanufaktur.de
+ * @copyright 2011
+ * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
+ * @version $Id$
+ *}
+<h2>{$title}</h2>
+<div class="intro">{$intro}</div>
+<table width="100%">
+  <colgroup>
+    <col width="50" />
+    <col width="300" />
+    <col width="*" />
+    <col width="150" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th>{$header.id}</th>
+      <th>{$header.permanent_link}</th>
+      <th>{$header.redirect_url}</th>
+      <th>{$header.timestamp}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {foreach $links link}
+    <tr class="{cycle values=array('flip', 'flop')}">
+      <td><a href="{$link.edit_link}">{string_format($link.id, '%05d')}</a></td>
+      <td>{$link.permanent_link}</td>
+      <td>{$link.redirect_url}</td>
+      <td>{date_format($link.timestamp, "%d.%m.%Y - %H:%M:%S")}</td>
+    </tr>
+    {/foreach}
+  </tbody>
+</table>

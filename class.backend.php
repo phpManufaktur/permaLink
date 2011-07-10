@@ -178,8 +178,64 @@ class permaLinkBackend extends permaLink {
   } // dlgAbout()
   
   public function dlgList() {
-  	echo mysql_get_client_info();
-  	return __METHOD__;
+  	global $dbPermaLink;
+  	
+  	$SQL = sprintf( "SELECT * FROM %s WHERE %s!='%s' ORDER BY %s ASC",
+  									$dbPermaLink->getTableName(),
+  									dbPermaLink::field_status,
+  									dbPermaLink::status_deleted,
+  									dbPermaLink::field_permanent_link);
+  	$links = array();
+  	if (!$dbPermaLink->sqlExec($SQL, $links)) {
+  		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbPermaLink->getError()));
+  		return false;
+  	}
+  	$links_array = array();
+  	
+  	foreach ($links as $link) {
+  		foreach ($dbPermaLink->type_array as $key => $value) {
+  			if ($key == $link[dbPermaLink::field_request_type]) {
+  				$rt = $value;	
+  				break;
+  			}
+  		}
+  		foreach ($dbPermaLink->status_array as $key => $value) {
+  			if ($key == $link[dbPermaLink::field_status]) {
+  				$status = $value;
+  				break;
+  			}
+  		}
+  		$links_array[$link[dbPermaLink::field_id]] = array(
+  			'id'							=> $link[dbPermaLink::field_id],
+  			'timestamp'				=> $link[dbPermaLink::field_timestamp],
+  			'request_by'			=> $link[dbPermaLink::field_request_by],
+  			'request_type'		=> $rt,
+  			'status'					=> $status,
+  			'redirect_url'		=> $link[dbPermaLink::field_redirect_url],
+  			'permanent_link'	=> $link[dbPermaLink::field_permanent_link],
+  			'edit_link'				=> sprintf(	'%s&%s', $this->page_link,
+  																		http_build_query(array(
+  																			self::request_action	=> self::action_edit,
+  																			dbPermaLink::field_id	=> $link[dbPermaLink::field_id]))) 
+  		);
+  	}
+  	
+  	$data = array(
+  		'title'				=> pl_title_list,
+  		'header'			=> array(
+  											'id'							=> pl_th_id,
+  											'timestamp'				=> pl_th_timestamp,
+  											'request_by'			=> pl_th_request_by,
+  											'request_type'		=> pl_th_request_type,
+  											'status'					=> pl_th_status,
+  											'redirect_url'		=> pl_th_redirect_url,
+  											'permanent_link'	=> pl_th_permanent_link
+  											),
+  		'links'				=> $links_array,
+  		'is_intro'		=> ($this->isMessage()) ? 0 : 1,
+  		'intro'				=> ($this->isMessage()) ? $this->getMessage() : pl_intro_list  	
+  	);
+  	return $this->getTemplate('backend.list.htt', $data);
   } // dlgList()
 	
   public function dlgEdit() {
@@ -301,6 +357,14 @@ class permaLinkBackend extends permaLink {
     		unset($_REQUEST[$key]);
     	}	
     	$_REQUEST[dbPermaLink::field_id] = $link_id;
+    }
+    else {
+    	if (!$this->updatePermaLink($link[dbPermaLink::field_id], $link[dbPermaLink::field_status])) {
+    		if ($this->isMessage()) return $this->dlgEdit();
+    		return false;
+    	}
+    	if ($link[dbPermaLink::field_status] == dbPermaLink::status_deleted) return $this->dlgList();
+    	return $this->dlgEdit();
     }
     return $this->dlgEdit();
   } // dlgEditCheck()

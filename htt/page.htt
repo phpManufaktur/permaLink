@@ -1,0 +1,19 @@
+<?php
+
+ /* permaLink
+  *
+  * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
+  * @link http://phpmanufaktur.de
+  * @copyright 2011
+  * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
+  * @version $Id$
+  *
+  * This file access to content of this website, so don't remove it!
+  *
+  */
+
+define('PERMA_LINK_ID', {$link_id});
+require_once('{$config_file}');
+require_once(WB_PATH.'/modules/perma_link/redirect.php');
+
+?>
