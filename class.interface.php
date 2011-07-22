@@ -1,4 +1,5 @@
 <?php
+
 /**
  * permaLink
  * 
@@ -7,10 +8,27 @@
  * @copyright 2011
  * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
  * @version $Id$
+ * 
+ * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
  */
 
-// prevent this file from being accessed directly
-if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
+// try to include LEPTON class.secure.php to protect this file and the whole CMS!
+if (defined('WB_PATH')) {	
+	if (defined('LEPTON_VERSION')) include(WB_PATH.'/framework/class.secure.php');
+} elseif (file_exists($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php')) {
+	include($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php'); 
+} else {
+	$subs = explode('/', dirname($_SERVER['SCRIPT_NAME']));	$dir = $_SERVER['DOCUMENT_ROOT'];
+	$inc = false;
+	foreach ($subs as $sub) {
+		if (empty($sub)) continue; $dir .= '/'.$sub;
+		if (file_exists($dir.'/framework/class.secure.php')) { 
+			include($dir.'/framework/class.secure.php'); $inc = true;	break; 
+		} 
+	}
+	if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include LEPTON class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+}
+// end include LEPTON class.secure.php
 
 // include GENERAL language file
 if(!file_exists(WB_PATH .'/modules/kit_tools/languages/' .LANGUAGE .'.php')) {
@@ -46,6 +64,11 @@ class permaLink {
 	private $message									= '';
 	protected $template_path					= '';
 	protected $forbidden_filenames 		= array('index.php', '.htaccess');
+	
+	const use_get											= 'GET';
+	const use_post										= 'POST';
+	const use_request									= 'REQUEST';
+	const use_session									= 'SESSION';
 	
 	public function __construct() {
 		global $kitLibrary;
@@ -133,7 +156,36 @@ class permaLink {
   	return true;
   } // getRecord()
   
-  public function createPermaLink($redirect_url, $perma_link, $request_by, $request_type=dbPermaLink::type_addon, &$link_id=-1) {
+  protected function getPageIDfromURL($url) {
+  	global $database;
+  	global $kitLibrary;
+  	
+  	$wb_settings = array();
+  	if (!$kitLibrary->getWBSettings($wb_settings)) return false;
+  	
+  	$url = parse_url($url, PHP_URL_PATH);
+  	$dir = str_replace($wb_settings['pages_directory'], '', dirname($url)).'/';  	
+  	$file = basename($url);
+  	$file = substr($file, 0, strpos($file, $wb_settings['page_extension']));
+  	
+  	$SQL = sprintf( "SELECT page_id FROM %spages WHERE link='%s'", TABLE_PREFIX, $dir.$file);
+  	$page_id = $database->get_one($SQL);
+  	if (empty($page_id)) return false;
+  	return $page_id;  	
+  } // getPageIDfromURL()
+  
+  /**
+   * Call this function to create a permanent link for your application
+   * 
+   * @param STR $redirect_url - the origin URL including all parameters needed
+   * @param STR $perma_link - the link which should be created
+   * @param STR $request_by - username or application which create the permaLink
+   * @param STR $request_type - type of permaLink - 'addon' or 'manual'
+   * @param REFERENCE INT $link_id - ID of the record
+   * @param STR $request_use - type of request - 'GET', 'PUT', 'REQUEST', 'SESSION'
+   * @return BOOL - if false you get additional informations by getMessage() or getError()
+   */
+  public function createPermaLink($redirect_url, $perma_link, $request_by, $request_type=dbPermaLink::type_addon, &$link_id=-1, $request_use=self::use_get) {
   	global $dbPermaLink;
   	global $kitLibrary;
   	// Pruefungen durchfuehren
@@ -143,6 +195,20 @@ class permaLink {
   		$this->setMessage(sprintf(pl_msg_redirect_url_extern, $redirect_url, WB_URL));
   		return false;
   	}
+  	// PAGE_ID aus der URL ermitteln
+  	if (false == ($page_id = $this->getPageIDfromURL($redirect_url))) {
+  		$this->setMessage(sprintf(pl_msg_page_id_not_found, $redirect_url));
+  		return false;
+  	}
+  	// Parameter auslesen
+  	$params = array(); 
+  	parse_str(parse_url($redirect_url, PHP_URL_QUERY), $params);
+  	
+  	$request_str = '';
+  	foreach ($params as $key => $value) {
+  		$request_str .= sprintf('$_%s[\'%s\']=\'%s\';', strtoupper($request_use), $key, $value);
+  	}
+  	
   	// Perma Link ggf. bereinigen
   	$perma_link = strtolower($perma_link);
   	if (empty($perma_link)) {
@@ -236,7 +302,7 @@ class permaLink {
   		$cfg_file .= '../';
   	}
   	$cfg_file .= 'config.php';
-  	$page_file = str_replace(array('{$link_id}', '{$config_file}'), array($link_id, $cfg_file), $page_file);
+  	$page_file = str_replace(array('{$requests}', '{$config_file}', '{$page_id}'), array($request_str, $cfg_file, $page_id), $page_file);
   	if (!file_put_contents(WB_PATH.PAGES_DIRECTORY.$perma_link, $page_file)) {
   		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, sprintf(pl_error_writing_file, PAGES_DIRECTORY.$perma_link)));
   		return false;
@@ -244,6 +310,12 @@ class permaLink {
   	return true;
   } // createPermaLink()
   
+  /**
+   * Use this function to change the status of the permaLink
+   * 
+   * @param INT $id
+   * @param BOOL $status
+   */
   public function updatePermaLink($id, $status) {
   	global $dbPermaLink;
   	
@@ -296,6 +368,12 @@ class permaLink {
   	}
   } // updatePermaLink()
   
+  /**
+   * Delete a permaLink
+   * 
+   * @param MIXED $perma_link - INT ID or STR permaLink
+   * @return BOOL
+   */
   public function deletePermaLink($perma_link) {
   	global $dbPermaLink;
   	if (is_int($perma_link)) {

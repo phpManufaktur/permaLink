@@ -12,8 +12,9 @@
   *
   */
 
-define('PERMA_LINK_ID', {$link_id});
+{$requests}
+$page_id = {$page_id};
 require_once('{$config_file}');
-require_once(WB_PATH.'/modules/perma_link/redirect.php');
+require(WB_PATH."/index.php");
 
 ?>

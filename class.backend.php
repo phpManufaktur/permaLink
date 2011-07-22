@@ -1,4 +1,5 @@
 <?php
+
 /**
  * permaLink
  * 
@@ -7,10 +8,27 @@
  * @copyright 2011
  * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
  * @version $Id$
+ * 
+ * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
  */
 
-// prevent this file from being accessed directly
-if (!defined('WB_PATH')) die('invalid call of '.$_SERVER['SCRIPT_NAME']);
+// try to include LEPTON class.secure.php to protect this file and the whole CMS!
+if (defined('WB_PATH')) {	
+	if (defined('LEPTON_VERSION')) include(WB_PATH.'/framework/class.secure.php');
+} elseif (file_exists($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php')) {
+	include($_SERVER['DOCUMENT_ROOT'].'/framework/class.secure.php'); 
+} else {
+	$subs = explode('/', dirname($_SERVER['SCRIPT_NAME']));	$dir = $_SERVER['DOCUMENT_ROOT'];
+	$inc = false;
+	foreach ($subs as $sub) {
+		if (empty($sub)) continue; $dir .= '/'.$sub;
+		if (file_exists($dir.'/framework/class.secure.php')) { 
+			include($dir.'/framework/class.secure.php'); $inc = true;	break; 
+		} 
+	}
+	if (!$inc) trigger_error(sprintf("[ <b>%s</b> ] Can't include LEPTON class.secure.php!", $_SERVER['SCRIPT_NAME']), E_USER_ERROR);
+}
+// end include LEPTON class.secure.php
 
 // include GENERAL language file
 if(!file_exists(WB_PATH .'/modules/kit_tools/languages/' .LANGUAGE .'.php')) {
@@ -246,12 +264,14 @@ class permaLinkBackend extends permaLink {
 
   	$link = array();
   	if ($link_id < 1) {
+  		// Defaults setzen
   		if (!$this->getDefaultDataRecord($link)) {
   			return false;
   		}
   		$link[dbPermaLink::field_request_type] = dbPermaLink::type_manual;
   		$link[dbPermaLink::field_request_by] = $kitLibrary->getDisplayName();
   		$link[dbPermaLink::field_timestamp] = time();
+  		$link[dbPermaLink::field_request_call] = dbPermaLink::call_get;
   	}
   	else {
   		if (!$this->getDataRecord($link_id, $link)) {
@@ -278,6 +298,12 @@ class permaLinkBackend extends permaLink {
   															'enabled'	=> 0,
   															'label'		=> pl_label_request_by,
   															'hint'		=> pl_hint_request_by),
+  		'request_call'	=> array(	'name'		=> dbPermaLink::field_request_call,
+  															'value'		=> $link[dbPermaLink::field_request_call],
+  															'options'	=> $dbPermaLink->call_aray,
+  															'enabled'	=> ($link_id) < 1 ? 1 : 0,
+  															'label'		=> pl_label_request_call,
+  															'hint'		=> pl_hint_request_call),
   		'status'				=> array(	'name'		=> dbPermaLink::field_status,
   															'value'		=> $link[dbPermaLink::field_status],
   															'options'	=> $dbPermaLink->status_array,
@@ -338,6 +364,7 @@ class permaLinkBackend extends permaLink {
     	case dbPermaLink::field_status:
     	case dbPermaLink::field_request_by:
     	case dbPermaLink::field_request_type:
+    	case dbPermaLink::field_request_call:
     	case dbPermaLink::field_redirect_url:
     	case dbPermaLink::field_permanent_link:
     		if (isset($_REQUEST[$key])) $link[$key] = $_REQUEST[$key];

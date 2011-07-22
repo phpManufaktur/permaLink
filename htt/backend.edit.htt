@@ -71,6 +71,21 @@
         <td class="pl_hint">{$link.request_by.hint}</td>
       </tr>
       <tr>
+        <td class="pl_label">{$link.request_call.label}</td>
+        <td class="pl_value">
+          {if $link.request_call.enabled == 1}
+          <select name="{$link.request_call.name}">
+            {foreach $link.request_call.options option}
+              <option value="{$option.value}"{if $link.redirect_call.value == $option.value} selected="selected"{/if}>{$option.text}</option>
+            {/foreach}
+          </select>
+          {else}
+            {foreach $link.request_call.options option}{if $link.request_call.value == $option.value}{$option.text}{/if}{/foreach}
+          {/if}
+        </td>
+        <td class="pl_hint">{$link.request_call.hint}</td>
+      </tr>
+      <tr>
         <td class="pl_label">{$link.redirect_url.label}</td>
         <td class="pl_value">
           {if $link.redirect_url.enabled == 1}
