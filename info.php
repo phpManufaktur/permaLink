@@ -33,7 +33,7 @@ if (defined('WB_PATH')) {
 $module_directory     = 'perma_link';
 $module_name          = 'permaLink';
 $module_function      = 'tool';
-$module_version       = '0.10';
+$module_version       = '0.11';
 $module_status        = 'Beta';
 $module_platform      = '2.8'; 
 $module_author        = 'Ralf Hertsch, Berlin (Germany)';

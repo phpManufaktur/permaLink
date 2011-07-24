@@ -376,7 +376,7 @@ class permaLinkBackend extends permaLink {
     
     if ($link_id < 1) {
     	// neuen permaLink anlegen
-    	if (!$this->createPermaLink($link[dbPermaLink::field_redirect_url], $link[dbPermaLink::field_permanent_link], $link[dbPermaLink::field_request_by], $link[dbPermaLink::field_request_type], $link_id)) {
+    	if (!$this->createPermaLink($link[dbPermaLink::field_redirect_url], $link[dbPermaLink::field_permanent_link], $link[dbPermaLink::field_request_by], $link[dbPermaLink::field_request_type], $link_id, $link[dbPermaLink::field_request_call])) {
     		if ($this->isMessage()) return $this->dlgEdit();
     		return false;
     	}

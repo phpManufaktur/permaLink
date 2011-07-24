@@ -178,14 +178,14 @@ class permaLink {
    * Call this function to create a permanent link for your application
    * 
    * @param STR $redirect_url - the origin URL including all parameters needed
-   * @param STR $perma_link - the link which should be created
+   * @param REFRENCE STR $perma_link - the link which should be created
    * @param STR $request_by - username or application which create the permaLink
    * @param STR $request_type - type of permaLink - 'addon' or 'manual'
    * @param REFERENCE INT $link_id - ID of the record
    * @param STR $request_use - type of request - 'GET', 'PUT', 'REQUEST', 'SESSION'
    * @return BOOL - if false you get additional informations by getMessage() or getError()
    */
-  public function createPermaLink($redirect_url, $perma_link, $request_by, $request_type=dbPermaLink::type_addon, &$link_id=-1, $request_use=self::use_get) {
+  public function createPermaLink($redirect_url, &$perma_link, $request_by, $request_type=dbPermaLink::type_addon, &$link_id=-1, $request_use=self::use_get) {
   	global $dbPermaLink;
   	global $kitLibrary;
   	// Pruefungen durchfuehren
@@ -234,7 +234,7 @@ class permaLink {
   			$start = false;
   			continue;
   		}
-  		$perma_link .= '/'.media_filename($segment);
+  		$perma_link .= '/'.page_filename($segment);
   	}
   	if (strpos($perma_link, '.') == 1) {
   		$this->setMessage(pl_msg_perma_link_not_hidden);
@@ -272,7 +272,8 @@ class permaLink {
   		dbPermaLink::field_permanent_link	=> $perma_link,
   		dbPermaLink::field_redirect_url		=> $redirect_url,
   		dbPermaLink::field_request_by			=> $request_by,
-  		dbPermaLink::field_request_type		=> $request_type,
+  		dbPermaLink::field_request_type		=> $request_type, 
+  		dbPermaLink::field_request_call		=> $request_use,
   		dbPermaLink::field_status					=> dbPermaLink::status_active
   	);
   	$link_id = -1;

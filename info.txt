@@ -3,6 +3,12 @@ permaLink
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
+Release 0.11
+2011-07-24
+fixed: flexTable does not save the used requesd type (caller)
+changed: now using page_filename() for creating permaLinks
+changed: parameter $perma_link in function createPermaLink() is now a reference and return the corrected $perma_link
+
 Release 0.10
 2011-07-07
 First Beta Release
