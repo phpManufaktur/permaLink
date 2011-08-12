@@ -3,6 +3,13 @@ permaLink
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
+Release 0.12
+2011-08-12
+fixed: problem checking MySQL Version on precheck.php
+fixed: problem validate an WYSIWYG URL if LEPTON is installed in a subdirectory
+added: getPageIDfromURL() in class.interface.php to get the permaLink URL for the desired permaLink ID
+fixed: some smaller problems, code cleanup in class.interface.php
+
 Release 0.11
 2011-07-24
 fixed: flexTable does not save the used requesd type (caller)

@@ -46,8 +46,7 @@ $sql = "SELECT `value` FROM `".TABLE_PREFIX."settings` WHERE `name`='default_cha
 $result = $database->query($sql);
 
 // auf MySQL 5 pruefen
-$vers = mysql_get_client_info();
-list($major, $minor) = explode('.', $vers, 2); 
+$sqlVersion = $database->get_one("SELECT VERSION()");
 
 if ($result) {
 	$data = $result->fetchRow(MYSQL_ASSOC);
@@ -57,9 +56,9 @@ if ($result) {
 			'ACTUAL' => $data['value'],
 			'STATUS' => ($data['value'] === 'utf-8')),
 		'MySQL VERSION' => array(
-			'REQUIRED' => '>= 5.0',
-			'ACTUAL' => $major,
-			'STATUS' => ($major >= 5))
+			'REQUIRED' => '>= 5.0.0',
+			'ACTUAL' => $sqlVersion,
+			'STATUS' => (version_compare($sqlVersion, '5.0.0') >= 0))
 	);
 }
 

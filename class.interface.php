@@ -156,6 +156,12 @@ class permaLink {
   	return true;
   } // getRecord()
   
+  /**
+   * Get the PAGE_ID from the desired WYSIWYG page URL
+   * 
+   * @param STR $url
+   * @return INT PAGE_ID or BOOL FALSE on error
+   */
   protected function getPageIDfromURL($url) {
   	global $database;
   	global $kitLibrary;
@@ -163,16 +169,42 @@ class permaLink {
   	$wb_settings = array();
   	if (!$kitLibrary->getWBSettings($wb_settings)) return false;
   	
-  	$url = parse_url($url, PHP_URL_PATH);
-  	$dir = str_replace($wb_settings['pages_directory'], '', dirname($url)).'/';  	
+  	$dir = str_replace(WB_URL.$wb_settings['pages_directory'], '', dirname($url)).'/';  	
   	$file = basename($url);
   	$file = substr($file, 0, strpos($file, $wb_settings['page_extension']));
-  	
   	$SQL = sprintf( "SELECT page_id FROM %spages WHERE link='%s'", TABLE_PREFIX, $dir.$file);
+    
   	$page_id = $database->get_one($SQL);
   	if (empty($page_id)) return false;
   	return $page_id;  	
   } // getPageIDfromURL()
+  
+  /**
+   * Call this function to get the complete URL of a permaLink by the given permaLink ID
+   * 
+   * @param INT $id permaLink
+   * @return STR URL or BOOL FALSE on error
+   */
+  public function getURLbyPermaLinkID($id) {
+  	global $dbPermaLink;
+  	global $kitLibrary;
+  	
+  	$where = array(dbPermaLink::field_id => $id);
+  	$pl = array();
+  	if (!$dbPermaLink->sqlSelectRecord($where, $pl)) {
+  		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, $dbPermaLink->getError()));
+  		return false;
+  	}
+  	if (count($pl) < 1) {
+  		$this->setError(sprintf('[%s - %s] %s', __METHOD__, __LINE__, sprintf(pl_error_perma_link_invalid_id, $id)));
+  		return false;
+  	}
+  	
+  	$wb_settings = array();
+  	if (!$kitLibrary->getWBSettings($wb_settings)) return false;
+  	
+  	return WB_URL.$wb_settings['pages_directory'].$pl[0][dbPermaLink::field_permanent_link];
+  } // getURLbyPermaLinkID() 
   
   /**
    * Call this function to create a permanent link for your application
@@ -189,14 +221,13 @@ class permaLink {
   	global $dbPermaLink;
   	global $kitLibrary;
   	// Pruefungen durchfuehren
-  	$redirect_url = strtolower($redirect_url);
   	if (strpos($redirect_url, WB_URL) === false) {
   		// ungueltige URL
   		$this->setMessage(sprintf(pl_msg_redirect_url_extern, $redirect_url, WB_URL));
   		return false;
   	}
   	// PAGE_ID aus der URL ermitteln
-  	if (false == ($page_id = $this->getPageIDfromURL($redirect_url))) {
+  	if (false === ($page_id = $this->getPageIDfromURL($redirect_url))) { 
   		$this->setMessage(sprintf(pl_msg_page_id_not_found, $redirect_url));
   		return false;
   	}

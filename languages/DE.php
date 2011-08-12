@@ -35,6 +35,7 @@ define('pl_error_reading_file',							'<p>Die Datei <b>%s</b> konnte nicht einge
 define('pl_error_status_unknown',						'<p>Der Status <b>%s</b> ist nicht definiert!</p>');
 define('pl_error_writing_file',							'<p>Die Datei <b>%s</b> konnte nicht geschrieben werden!</p>');
 define('pl_error_perma_link_invalid',				'<p>Es wurde kein Datensatz zu dem permaLink <b>%s</b> gefunden!</p>');
+define('pl_error_perma_link_invalid_id',		'<p>Es wurde kein Datensatz zu der permaLink <b>ID %05d</b> gefunden!</p>');
 
 define('pl_hint_id',												'');
 define('pl_hint_request_call',							'Legen Sie fest, auf welche Weise die Parameter an die Anwendung übergeben werden.');
