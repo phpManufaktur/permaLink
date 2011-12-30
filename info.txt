@@ -3,6 +3,10 @@ permaLink
 Ralf Hertsch, Stockholmer Str. 31, 13359 Berlin (Germany)
 http://phpManufaktur.de - ralf.hertsch@phpManufaktur.de
 
+Release 0.13
+2011-12-30
+fixed: some smaller problems, code cleanup
+
 Release 0.12
 2011-08-12
 fixed: problem checking MySQL Version on precheck.php
