@@ -1,0 +1,32 @@
+### permaLink
+
+0.14 - 2012-06-01
+
+* moved repository from SVN to GitHub
+* updated all header informations
+* reformatted source codes
+* added CHANGELOG
+* added LICENSE
+* added README.md
+* removed info.txt
+
+0.13 - 2011-12-30
+
+* fixed: some smaller problems, code cleanup
+
+0.12 - 2011-08-12
+
+* fixed: problem checking MySQL Version on precheck.php
+* fixed: problem validate an WYSIWYG URL if LEPTON is installed in a subdirectory
+* added: getPageIDfromURL() in class.interface.php to get the permaLink URL for the desired permaLink ID
+* fixed: some smaller problems, code cleanup in class.interface.php
+
+0.11 - 2011-07-24
+
+* fixed: flexTable does not save the used requesd type (caller)
+* changed: now using page_filename() for creating permaLinks
+* changed: parameter $perma_link in function createPermaLink() is now a reference and return the corrected $perma_link
+
+0.10 - 2011-07-07
+
+* initial release

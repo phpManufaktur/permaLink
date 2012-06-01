@@ -2,14 +2,11 @@
 
 /**
  * permaLink
- * 
- * @author Ralf Hertsch (ralf.hertsch@phpmanufaktur.de)
- * @link http://phpmanufaktur.de
- * @copyright 2011
- * @license GNU GPL (http://www.gnu.org/licenses/gpl.html)
- * @version $Id$
- * 
- * FOR VERSION- AND RELEASE NOTES PLEASE LOOK AT INFO.TXT!
+ *
+ * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
+ * @link https://addons.phpmanufaktur.de/de/addons/permalink.php
+ * @copyright 2011-2012 phpManufaktur by Ralf Hertsch
+ * @license http://www.gnu.org/licenses/gpl.html GNU Public License (GPL)
  */
 
 // include class.secure.php to protect this file and the whole CMS!
@@ -34,7 +31,7 @@ if (defined('WB_PATH')) {
 if (!class_exists('dbconnectle')) 				require_once(WB_PATH.'/modules/dbconnect_le/include.php');
 
 class dbPermaLink extends dbConnectLE {
-	
+
 	const field_id							= 'pl_id';
 	const field_redirect_url 		= 'pl_redirect_url';
 	const field_permanent_link	= 'pl_permanent_link';
@@ -43,41 +40,41 @@ class dbPermaLink extends dbConnectLE {
 	const field_request_call		= 'pl_request_call';
 	const field_status					= 'pl_status';
 	const field_timestamp				= 'pl_timestamp';
-	
+
 	const type_addon 						= 1;
 	const type_manual						= 2;
 	const type_undefined				= 0;
-	
+
 	public $type_array = array(
 		array('value' => self::type_addon, 			'text' => pl_type_addon),
 		array('value' => self::type_manual, 		'text' => pl_type_manual),
 		array('value' => self::type_undefined, 'text' => pl_type_undefined)
 	);
-	
+
 	const call_get							= 'GET';
 	const call_request					= 'REQUEST';
 	const call_put							= 'PUT';
 	const call_session					= 'SESSION';
-	
+
 	public $call_aray = array(
 		array('value'	=> self::call_get, 			'text' => 'GET'),
 		array('value'	=> self::call_put, 			'text' => 'PUT'),
 		array('value'	=> self::call_request, 	'text' => 'REQUEST'),
-		array('value'	=> self::call_session, 	'text' => 'SESSION')		
+		array('value'	=> self::call_session, 	'text' => 'SESSION')
 	);
-	
+
 	const status_active					= 1;
 	const status_locked					= 2;
-	const status_deleted				= 3; 
+	const status_deleted				= 3;
 
 	public $status_array = array(
 		array('value' => self::status_active,		'text'	=> pl_status_active),
 		array('value' => self::status_locked,		'text' => pl_status_locked),
 		array('value' => self::status_deleted,	'text'	=> pl_status_deleted)
 	);
-	
+
 	private $createTables 		= false;
-  
+
   public function __construct($createTables = false) {
   	$this->createTables = $createTables;
   	parent::__construct();
@@ -89,7 +86,7 @@ class dbPermaLink extends dbConnectLE {
   	$this->addFieldDefinition(self::field_request_by, "VARCHAR(128) NOT NULL DEFAULT ''");
   	$this->addFieldDefinition(self::field_request_call, "VARCHAR(20) NOT NULL DEFAULT '".self::call_get."'");
   	$this->addFieldDefinition(self::field_status, "TINYINT NOT NULL DEFAULT '".self::status_active."'");
-  	$this->addFieldDefinition(self::field_timestamp, "TIMESTAMP");	
+  	$this->addFieldDefinition(self::field_timestamp, "TIMESTAMP");
   	$this->checkFieldDefinitions();
   	// Tabelle erstellen
   	if ($this->createTables) {
@@ -100,7 +97,7 @@ class dbPermaLink extends dbConnectLE {
   		}
   	}
   } // __construct()
-	
+
 } // class dbPermaLink
 
 ?>
