@@ -1,5 +1,9 @@
 ### permaLink
 
+0.15 - 2012-06-14
+
+* removed WebsiteBaker version check
+
 0.14 - 2012-06-01
 
 * moved repository from SVN to GitHub

@@ -33,7 +33,7 @@ else {
 $module_directory = 'perma_link';
 $module_name = 'permaLink';
 $module_function = 'tool';
-$module_version = '0.14';
+$module_version = '0.15';
 $module_status = 'Stable';
 $module_platform = '2.8';
 $module_author = 'Ralf Hertsch, Berlin (Germany)';
