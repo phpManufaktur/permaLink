@@ -60,6 +60,7 @@ global $permaLink;
 if (!is_object($kitLibrary)) $kitLibrary = new kitToolsLibrary();
 if (!is_object($dbPermaLink)) $dbPermaLink = new dbPermaLink();
 if (!is_object($permaLink)) $permaLink = new permaLink();
+
 class permaLink {
   private $error = '';
   private $message = '';
@@ -72,6 +73,7 @@ class permaLink {
   const use_post = 'POST';
   const use_request = 'REQUEST';
   const use_session = 'SESSION';
+
   public function __construct() {
     global $kitLibrary;
     $this->template_path = WB_PATH . '/modules/' . basename(dirname(__FILE__)) . '/htt/';
@@ -130,6 +132,7 @@ class permaLink {
   public function isError() {
     return (bool) !empty($this->error);
   } // isError
+
   protected function getDefaultDataRecord(&$data = array()) {
     global $dbPermaLink;
 
@@ -140,6 +143,7 @@ class permaLink {
 
     return true;
   } // getDefaultRecord()
+
   protected function getDataRecord($link_id, &$data = array()) {
     global $dbPermaLink;
 
