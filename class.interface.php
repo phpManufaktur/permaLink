@@ -62,13 +62,16 @@ if (!is_object($dbPermaLink)) $dbPermaLink = new dbPermaLink();
 if (!is_object($permaLink)) $permaLink = new permaLink();
 
 class permaLink {
+
   private $error = '';
   private $message = '';
+
   protected $template_path = '';
   protected $forbidden_filenames = array(
     'index.php',
     '.htaccess'
   );
+
   const use_get = 'GET';
   const use_post = 'POST';
   const use_request = 'REQUEST';
