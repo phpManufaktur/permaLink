@@ -247,6 +247,7 @@ class permaLink {
     }
     // Parameter auslesen
     $params = array();
+    $redirect_url = str_replace('&amp;', '&', $redirect_url);
     parse_str(parse_url($redirect_url, PHP_URL_QUERY), $params);
 
     $request_str = '';
@@ -346,7 +347,7 @@ class permaLink {
         }
       }
     }
-    for($i = 0; $i < $count; $i++) {
+    for($i = 1; $i < $count; $i++) {
       $cfg_file .= '../';
     }
     $cfg_file .= 'config.php';
