@@ -4,9 +4,9 @@
  * permaLink
  *
  * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
- * @link https://addons.phpmanufaktur.de/de/addons/permalink.php
- * @copyright 2011-2012 phpManufaktur by Ralf Hertsch
- * @license http://www.gnu.org/licenses/gpl.html GNU Public License (GPL)
+ * @link https://phpmanufaktur.de/perma_link
+ * @copyright 2011-2013 phpManufaktur by Ralf Hertsch
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
 // include class.secure.php to protect this file and the whole CMS!
@@ -36,10 +36,10 @@ $PRECHECK['PHP_VERSION'] = array(
   'VERSION' => '5.2.0',
   'OPERATOR' => '>='
 );
-if (!defined('LEPTON_VERSION') || version_compare(LEPTON_VERSION, '2.0.0.0', '<=')) {
+if (defined('CAT_VERSION')) {
   $PRECHECK['WB_ADDONS'] = array(
     'dbconnect_le' => array(
-      'VERSION' => '0.65',
+      'VERSION' => '0.71',
       'OPERATOR' => '>='
     ),
     'kit_tools' => array(
@@ -51,7 +51,7 @@ if (!defined('LEPTON_VERSION') || version_compare(LEPTON_VERSION, '2.0.0.0', '<=
 else {
   $PRECHECK['WB_ADDONS'] = array(
     'dbconnect_le' => array(
-      'VERSION' => '0.65',
+      'VERSION' => '0.71',
       'OPERATOR' => '>='
     ),
     'dwoo' => array(
@@ -88,5 +88,3 @@ if ($result) {
     )
   );
 }
-
-?>

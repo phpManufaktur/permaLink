@@ -4,9 +4,9 @@
  * permaLink
  *
  * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
- * @link https://addons.phpmanufaktur.de/de/addons/permalink.php
- * @copyright 2011-2012 phpManufaktur by Ralf Hertsch
- * @license http://www.gnu.org/licenses/gpl.html GNU Public License (GPL)
+ * @link https://phpmanufaktur.de/perma_link
+ * @copyright 2011-2013 phpManufaktur by Ralf Hertsch
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
 // include class.secure.php to protect this file and the whole CMS!
@@ -33,11 +33,11 @@ else {
 $module_directory = 'perma_link';
 $module_name = 'permaLink';
 $module_function = 'tool';
-$module_version = '0.15';
+$module_version = '0.16';
 $module_status = 'Stable';
 $module_platform = '2.8';
 $module_author = 'Ralf Hertsch, Berlin (Germany)';
-$module_license = 'GNU General Public License';
-$module_description = 'Permanent Links for WebsiteBaker Addons';
-$module_home = 'http://phpmanufaktur.de/perma_link';
+$module_license = 'MIT License (MIT)';
+$module_description = 'Permanent Links for WebsiteBaker, LEPTON CMS and BlackCat CMS';
+$module_home = 'https://phpmanufaktur.de/perma_link';
 $module_guid = '2DDC6704-498E-4EC9-BE30-2693A4B9D3A3';

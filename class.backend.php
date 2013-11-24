@@ -4,9 +4,9 @@
  * permaLink
  *
  * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
- * @link https://addons.phpmanufaktur.de/de/addons/permalink.php
- * @copyright 2011-2012 phpManufaktur by Ralf Hertsch
- * @license http://www.gnu.org/licenses/gpl.html GNU Public License (GPL)
+ * @link https://phpmanufaktur.de/perma_link
+ * @copyright 2011-2013 phpManufaktur by Ralf Hertsch
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
 // include class.secure.php to protect this file and the whole CMS!
@@ -56,7 +56,10 @@ if (!class_exists('permaLink')) require_once (WB_PATH . '/modules/' . basename(d
 
 global $parser;
 
-if (!is_object($parser)) $parser = new Dwoo();
+if (!is_object($parser)) {
+    $parser = new Dwoo();
+}
+
 class permaLinkBackend extends permaLink {
   const request_action = 'act';
   const action_about = 'abt';
@@ -190,6 +193,7 @@ class permaLinkBackend extends permaLink {
     );
     return $this->getTemplate('backend.about.htt', $data);
   } // dlgAbout()
+
   public function dlgList() {
     global $dbPermaLink;
 
@@ -246,6 +250,7 @@ class permaLinkBackend extends permaLink {
     );
     return $this->getTemplate('backend.list.htt', $data);
   } // dlgList()
+
   public function dlgEdit() {
     global $dbPermaLink;
     global $kitLibrary;
@@ -352,6 +357,7 @@ class permaLinkBackend extends permaLink {
     );
     return $this->getTemplate('backend.edit.htt', $data);
   } // dlgEdit()
+
   public function checkEdit() {
     global $dbPermaLink;
 
@@ -386,7 +392,14 @@ class permaLinkBackend extends permaLink {
 
     if ($link_id < 1) {
       // neuen permaLink anlegen
-      if (!$this->createPermaLink($link[dbPermaLink::field_redirect_url], $link[dbPermaLink::field_permanent_link], $link[dbPermaLink::field_request_by], $link[dbPermaLink::field_request_type], $link_id, $link[dbPermaLink::field_request_call])) {
+      if (!$this->createPermaLink(
+          $link[dbPermaLink::field_redirect_url],
+          $link[dbPermaLink::field_permanent_link],
+          $link[dbPermaLink::field_request_by],
+          $link[dbPermaLink::field_request_type],
+          $link_id,
+          $link[dbPermaLink::field_request_call]
+        )) {
         if ($this->isMessage()) return $this->dlgEdit();
         return false;
       }

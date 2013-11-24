@@ -4,9 +4,9 @@
  * permaLink
  *
  * @author Ralf Hertsch <ralf.hertsch@phpmanufaktur.de>
- * @link https://addons.phpmanufaktur.de/de/addons/permalink.php
- * @copyright 2011-2012 phpManufaktur by Ralf Hertsch
- * @license http://www.gnu.org/licenses/gpl.html GNU Public License (GPL)
+ * @link https://phpmanufaktur.de/perma_link
+ * @copyright 2011-2013 phpManufaktur by Ralf Hertsch
+ * @license MIT License (MIT) http://www.opensource.org/licenses/MIT
  */
 
 // include class.secure.php to protect this file and the whole CMS!
@@ -241,6 +241,7 @@ class permaLink {
   public function createPermaLink($redirect_url, &$perma_link, $request_by, $request_type = dbPermaLink::type_addon, &$link_id = -1, $request_use = self::use_get) {
     global $dbPermaLink;
     global $kitLibrary;
+
     // Pruefungen durchfuehren
     if (strpos($redirect_url, WB_URL) === false) {
       // ungueltige URL
@@ -344,6 +345,7 @@ class permaLink {
     }
     $cfg_file = '';
     $count = substr_count($perma_link, '/');
+
     if ($count > 1) {
       // pruefen, ob das erforderliche Verzeichnis bereits existiert
       $dir = substr($perma_link, 0, strrpos($perma_link, '/'));
@@ -354,7 +356,7 @@ class permaLink {
         }
       }
     }
-    for($i = 1; $i < $count; $i++) {
+    for($i = 0; $i < $count; $i++) {
       $cfg_file .= '../';
     }
     $cfg_file .= 'config.php';
